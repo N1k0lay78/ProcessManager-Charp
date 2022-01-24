@@ -75,7 +75,7 @@ namespace ProcessManager
         {
             try
             {
-                Process.GetProcessById(Id).Kill();
+                Process.GetProcessById(Id).Kill(true);
                 return true;
             }
             catch (Exception)
@@ -86,7 +86,18 @@ namespace ProcessManager
 
         public bool KillByName(string Name)
         {
-            throw new NotImplementedException();
+            try
+            {
+                foreach (var process in Process.GetProcessesByName(Name))
+                {
+                    process.Kill(true); 
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public void GetProcessId(string Name)
@@ -134,7 +145,7 @@ namespace ProcessManager
                 }
                 catch (Exception)
                 {
-
+                    // System process or access denied
                 }
             }
         }
