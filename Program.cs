@@ -7,7 +7,7 @@ namespace ProcessManager
         static void Main(string[] args)
         {
             var app = new UI();
-            app.run();
+            app.Run();
         }
     }
 }

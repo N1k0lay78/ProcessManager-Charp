@@ -4,41 +4,61 @@ using System.Text;
 
 namespace ProcessManager
 {
+    interface IUserInterface
+    {
+        public void Run();
+    }
+
     public class UI
     {
-        bool running = true;
+        bool Running = true;
         public UI()
         {
             var pm = new ProcessManager();
 
         }
 
-        string[] ask_comand()
+        string[] AskComand()
         {
             Console.Write("command> ");
-            var ans = Console.ReadLine();
-            return ans.Split();
+            var Ans = Console.ReadLine();
+            return Ans.Split();
         }
 
-        void update()
+        int IsIntParam(string Line)
         {
-            var command = ask_comand();
-            switch (command[0].ToLower())
+            int Res;
+            int.TryParse(Line, out Res);
+            return Res;
+        }
+
+        void Update(string[] Command)
+        {
+            switch (Command[0].ToLower())
             {
                 case "quit":
-                    running = false;
+                    Running = false;
                     break;
                 case "help":
                     Console.WriteLine("\tQuit              - Выйти из приложения");
-                    Console.WriteLine("\tKill <process>    - Убить процесс (name/id)");
+                    Console.WriteLine("\tKill <process>    - Убить процесс                 (name/id)");
                     Console.WriteLine("\tTaskList          - Список выполняющихся задач");
-                    Console.WriteLine("\tProcess <process> - Показать процессы (name/id)");
-                    Console.WriteLine("\tInfo <id>         - Полную информацию о процессе");
+                    Console.WriteLine("\tProcess <process> - Показать процессы             (name/id)");
+                    Console.WriteLine("\tInfo <id>         - Полную информацию о процессе  (id)");
                     break;
                 case "kill":
-                    if (command.Length > 1)
+                    if (Command.Length > 1)
                     {
-                        Console.WriteLine($"*kill process {command[1]}*");
+                        var Param = String.Join(" ", Command[1..]);
+                        int Id;
+                        if (int.TryParse(Param, out Id))
+                        {
+                            Console.WriteLine($"*kill process Id = {Id}*");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"*kill process Name = {Param}*");
+                        }
                     }
                     else
                     {
@@ -49,19 +69,40 @@ namespace ProcessManager
                     Console.WriteLine($"*taskList of processes*");
                     break;
                 case "process":
-                    if (command.Length > 1)
+                    if (Command.Length > 1)
                     {
-                        Console.WriteLine($"*processes {command[1]}*");
+                        var Param = String.Join(" ", Command[1..]);
+                        int Id;
+                        if (int.TryParse(Param, out Id))
+                        {
+                            Console.WriteLine($"*processes Id = {Id}*");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"*processes Name = {Param}*");
+                        }
                     }
-                            else
+                    else
                     {
                         Console.WriteLine("missing required attribute 'process' (name/id)");
                     }
                     break;
                 case "info":
-                    if (command.Length > 1)
+                    if (Command.Length > 1)
                     {
-                        Console.WriteLine($"*info about process id +{command[1]}*");
+                        var Any = false;
+                        foreach (var Line in Command[1..]) {
+                            int Id;
+                            if (int.TryParse(Line, out Id)) 
+                            {
+                                Any = true;
+                                Console.WriteLine($"*info about process id = {Id}*");
+                            }
+                        }
+                        if (!Any)
+                        {
+                            Console.WriteLine("must be a decimal number");
+                        }
                     }
                     else
                     {
@@ -74,11 +115,11 @@ namespace ProcessManager
             }
         }
 
-        public void run()
+        public void Run()
         {
-            while (running)
+            while (Running)
             {
-                update();
+                Update(AskComand());
             }
         }
     }
