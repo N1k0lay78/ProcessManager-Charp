@@ -12,24 +12,26 @@ namespace ProcessManager
     public class UI
     {
         bool Running = true;
+        ProcessManager PM;
+
         public UI()
         {
-            var pm = new ProcessManager();
+            PM = new ProcessManager();
 
         }
 
         string[] AskComand()
         {
-            Console.Write("command> ");
+            Console.Write("Command> ");
             var Ans = Console.ReadLine();
             return Ans.Split();
         }
 
-        int IsIntParam(string Line)
+        bool IsAgree()
         {
-            int Res;
-            int.TryParse(Line, out Res);
-            return Res;
+            Console.WriteLine("write y/Y to agree or something to refuse");
+            var Ans = Console.ReadLine();
+            return Ans.Trim().ToLower() == "y";
         }
 
         void Update(string[] Command)
@@ -44,7 +46,7 @@ namespace ProcessManager
                     Console.WriteLine("\tKill <process>    - Убить процесс                 (name/id)");
                     Console.WriteLine("\tTaskList          - Список выполняющихся задач");
                     Console.WriteLine("\tProcess <process> - Показать процессы             (name/id)");
-                    Console.WriteLine("\tInfo <id>         - Полную информацию о процессе  (id)");
+                    Console.WriteLine("\tInfo <ids>        - Показать полную информацию о процессе  (ids)");
                     break;
                 case "kill":
                     if (Command.Length > 1)
@@ -66,7 +68,7 @@ namespace ProcessManager
                     }
                     break;
                 case "tasklist":
-                    Console.WriteLine($"*taskList of processes*");
+                    PM.TrackList();
                     break;
                 case "process":
                     if (Command.Length > 1)
@@ -75,11 +77,17 @@ namespace ProcessManager
                         int Id;
                         if (int.TryParse(Param, out Id))
                         {
-                            Console.WriteLine($"*processes Id = {Id}*");
+                            if (!PM.ProcessBy(Id))
+                            {
+                                Console.WriteLine("Calling a process that doesn't exist or is inaccessible");
+                            }
                         }
                         else
                         {
-                            Console.WriteLine($"*processes Name = {Param}*");
+                            if (!PM.ProcessesBy(Param))
+                            {
+                                Console.WriteLine("Calling a process that doesn't exist or is inaccessible");
+                            }
                         }
                     }
                     else
@@ -106,7 +114,7 @@ namespace ProcessManager
                     }
                     else
                     {
-                        Console.WriteLine("missing required attribute 'id' (id)");
+                        Console.WriteLine("missing required attribute 'ids' (ids)");
                     }
                     break;
                 default:

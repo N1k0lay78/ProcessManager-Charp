@@ -9,8 +9,8 @@ namespace ProcessManager
         public bool KillById(int Id);
         public bool KillByName(string Name);
         public void TrackList();
-        public void GetProcessId(string Name);
-        public void GetProcessName(int Id);
+        public bool ProcessesBy(string Name);
+        public bool ProcessBy(int Id);
     }
 
     public class ProcessManager : IProcessManager
@@ -100,33 +100,39 @@ namespace ProcessManager
             }
         }
 
-        public void GetProcessId(string Name)
+        public bool ProcessesBy(string Name)
         {
-            WriteHeader();
+            var Any = false;
             foreach (var process in Process.GetProcessesByName(Name))
             {
                 if (UsableProcess(process))
                 {
-                    WriteProcess(process);
-                }
-                else
-                {
-                    Console.WriteLine("Access denied");
+                    Any = true;
                 }
             }
+
+            if (Any) { 
+                WriteHeader();
+                foreach (var process in Process.GetProcessesByName(Name))
+                {
+                    if (UsableProcess(process))
+                    {
+                        WriteProcess(process);
+                    }
+                }
+            }
+            return Any;
         }
 
-        public void GetProcessName(int Id)
+        public bool ProcessBy(int Id)
         {
             if (UsableProcess(Process.GetProcessById(Id)))
             {
                 WriteHeader();
                 WriteProcess(Process.GetProcessById(Id));
+                return true;
             }
-            else
-            {
-                Console.WriteLine("Access denied");
-            }
+            return false;
         }
 
         public void TrackList()
