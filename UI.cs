@@ -27,9 +27,11 @@ namespace ProcessManager
             return Ans.Split();
         }
 
-        bool IsAgree()
+        bool IsAgree(string Text)
         {
-            Console.WriteLine("write y/Y to agree or something to refuse");
+            Console.WriteLine(Text);
+            Console.WriteLine("Write y/Y to agree or something to refuse");
+            Console.Write("Answer: ");
             var Ans = Console.ReadLine();
             return Ans.Trim().ToLower() == "y";
         }
@@ -55,11 +57,39 @@ namespace ProcessManager
                         int Id;
                         if (int.TryParse(Param, out Id))
                         {
-                            Console.WriteLine($"*kill process Id = {Id}*");
+                            if (!PM.ProcessBy(Id))
+                            {
+                                Console.WriteLine("Calling a process that doesn't exist or is inaccessible");
+                            }
+                            else if (IsAgree("Are you sure you want to stop this process?"))
+                            {
+                                if (PM.KillById(Id))
+                                {
+                                    Console.WriteLine("Process killed successfully");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("The process escaped being killed!!!!");
+                                }
+                            }
                         }
                         else
                         {
-                            Console.WriteLine($"*kill process Name = {Param}*");
+                            if (!PM.ProcessesBy(Param))
+                            {
+                                Console.WriteLine("Calling a process that doesn't exist or is inaccessible");
+                            }
+                            else if (IsAgree("Are you sure you want to stop this process?"))
+                            {
+                                if (PM.KillByName(Param))
+                                {
+                                    Console.WriteLine("Process killed successfully");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("The process escaped being killed!!!!");
+                                }
+                            }
                         }
                     }
                     else
@@ -104,7 +134,10 @@ namespace ProcessManager
                             if (int.TryParse(Line, out Id)) 
                             {
                                 Any = true;
-                                Console.WriteLine($"*info about process id = {Id}*");
+                                if (!PM.FullInfo(Id))
+                                {
+                                    Console.WriteLine("Calling a process that doesn't exist or is inaccessible");
+                                }
                             }
                         }
                         if (!Any)

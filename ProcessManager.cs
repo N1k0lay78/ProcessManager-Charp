@@ -11,6 +11,7 @@ namespace ProcessManager
         public void TrackList();
         public bool ProcessesBy(string Name);
         public bool ProcessBy(int Id);
+        public bool FullInfo(int Id);
     }
 
     public class ProcessManager : IProcessManager
@@ -63,7 +64,7 @@ namespace ProcessManager
                     time += '0';
                 }
                 time += process.StartTime.Second;
-                Console.WriteLine($"| {process.Id,IdWidth} | {process.ProcessName,NameWidth} | {(process.PeakWorkingSet64 / 1024 / 1024) + " MB",-SizeWidth} | {time,-StartWidth} | {process.Threads.Count,-ThreadsWidth} | {process.PriorityClass,PriorityWidth} | {process.Responding,AliveWidth} |");
+                Console.WriteLine($"| {process.Id,IdWidth} | {process.ProcessName,NameWidth} | {(process.VirtualMemorySize64 / 1024 / 1024) + " MB",-SizeWidth} | {time,-StartWidth} | {process.Threads.Count,-ThreadsWidth} | {process.PriorityClass,PriorityWidth} | {process.Responding,AliveWidth} |");
             }
             catch (System.ComponentModel.Win32Exception)
             {
@@ -130,6 +131,61 @@ namespace ProcessManager
             {
                 WriteHeader();
                 WriteProcess(Process.GetProcessById(Id));
+                return true;
+            }
+            return false;
+        }
+
+        public bool FullInfo(int Id)
+        {
+            var process = Process.GetProcessById(Id);
+            if (UsableProcess(process)) 
+            {
+                Console.WriteLine($"Id:");
+                Console.WriteLine($"Id                         {process.Id}");
+                Console.WriteLine($"SessionId                  {process.SessionId}");
+                
+                Console.WriteLine($"Info:");
+                Console.WriteLine($"ProcessName                {process.ProcessName}");
+                Console.WriteLine($"MainModule                 {process.MainModule}");
+                Console.WriteLine($"MainWindowTitle            {process.MainWindowTitle}");
+                Console.WriteLine($"PriorityClass              {process.PriorityClass}");
+                Console.WriteLine($"PriorityBoostEnabled       {process.PriorityBoostEnabled}");
+                Console.WriteLine($"BasePriority               {process.BasePriority}");
+                Console.WriteLine($"Responding(Alive)          {process.Responding}");
+                Console.WriteLine($"MachineName                {process.MachineName}");
+                Console.WriteLine($"Modules                    {process.Modules}");
+                Console.WriteLine($"HasExited                  {process.HasExited}");
+
+                Console.WriteLine($"Handle:");
+                Console.WriteLine($"Handle                     {process.Handle}");
+                Console.WriteLine($"HandleCount                {process.HandleCount}");
+                Console.WriteLine($"MainWindowHandle           {process.MainWindowHandle}");
+
+                Console.WriteLine($"Memory:");
+                Console.WriteLine($"VirtualMemorySize64        {process.VirtualMemorySize64} Byte");
+                Console.WriteLine($"NonpagedSystemMemorySize64 {process.NonpagedSystemMemorySize64} Byte");
+                Console.WriteLine($"PrivateMemorySize64        {process.PrivateMemorySize64} Byte");
+
+                try
+                {
+                    Console.WriteLine($"Standard input/output/error/info:");
+                    Console.WriteLine($"StandardInput              {process.StandardInput}");
+                    Console.WriteLine($"StandardOutput             {process.StandardOutput}");
+                    Console.WriteLine($"StandardError              {process.StandardError}");
+                    Console.WriteLine($"StartInfo                  {process.StartInfo}");
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"Cant get info about Standard IO");
+                }
+                Console.WriteLine($"Threads:");
+                Console.WriteLine($"Threads.Count              {process.Threads.Count}");
+                Console.WriteLine($"Time:");
+                Console.WriteLine($"StartTime                  {process.StartTime}");
+                Console.WriteLine($"TotalProcessorTime         {process.TotalProcessorTime}");
+                Console.WriteLine($"UserProcessorTime          {process.UserProcessorTime}");
+                Console.WriteLine($"PrivilegedProcessorTime    {process.PrivilegedProcessorTime}");
                 return true;
             }
             return false;
