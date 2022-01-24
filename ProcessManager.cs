@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ProcessManager
@@ -15,7 +16,7 @@ namespace ProcessManager
     public class ProcessManager : IProcessManager
     {
         private const int IdWidth       = 7;
-        private const int NameWidth     = -35;
+        private const int NameWidth     = -40;
         private const int SizeWidth     = -10;
         private const int StartWidth    = -8;
         private const int ThreadsWidth  = -10;
@@ -72,7 +73,15 @@ namespace ProcessManager
 
         public bool KillById(int Id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Process.GetProcessById(Id).Kill();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool KillByName(string Name)
@@ -88,6 +97,10 @@ namespace ProcessManager
                 if (UsableProcess(process))
                 {
                     WriteProcess(process);
+                }
+                else
+                {
+                    Console.WriteLine("Access denied");
                 }
             }
         }
@@ -108,11 +121,20 @@ namespace ProcessManager
         public void TrackList()
         {
             WriteHeader();
+            var names = new HashSet<string>();
             foreach (var process in Process.GetProcesses())
             {
-                if (process.MainWindowTitle != "")
+                try
                 {
-                    WriteProcess(process);
+                    if (process.MainWindowHandle != process.Handle && process.ProcessName != "" && !names.Contains(process.ProcessName))
+                    {
+                        names.Add(process.ProcessName);
+                        WriteProcess(process);
+                    }
+                }
+                catch (Exception)
+                {
+
                 }
             }
         }
