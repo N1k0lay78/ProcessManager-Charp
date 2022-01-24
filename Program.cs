@@ -6,7 +6,8 @@ namespace ProcessManager
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var pm = new ProcessManager();
+            pm.TrackList();
         }
     }
 }
