@@ -7,14 +7,68 @@ namespace ProcessManager
     {
         public bool KillById(int Id);
         public bool KillByName(string Name);
-        public bool TrackList();
-        public bool ProcessId(string Name);
-        public bool ProcessName(int Id);
+        public void TrackList();
+        public void GetProcessId(string Name);
+        public void GetProcessName(int Id);
     }
 
     public class ProcessManager : IProcessManager
     {
+        private const int IdWidth       = 7;
+        private const int NameWidth     = -35;
+        private const int SizeWidth     = -10;
+        private const int StartWidth    = -8;
+        private const int ThreadsWidth  = -10;
+        private const int PriorityWidth = -12;
+        private const int AliveWidth    = -10;
+
         public ProcessManager() { }
+
+        void WriteHeader()
+        {
+            Console.WriteLine($"| {"Id",IdWidth} | {"Name",NameWidth} | {"Size",SizeWidth} | {"Start",StartWidth} | {"Threads",ThreadsWidth} | {"Priority",PriorityWidth} | {"Alive",AliveWidth} |");
+        }
+
+        bool UsableProcess(Process process)
+        {
+            try
+            {
+                if (process != null && process.PeakWorkingSet64 != null && process.Threads.Count != null && process.PriorityClass != null && process.Responding != null) { }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        void WriteProcess(Process process)
+        {
+            try
+            {
+                var time = "";
+                if (process.StartTime.Hour < 10)
+                {
+                    time += '0';
+                }
+                time += process.StartTime.Hour + ":";
+                if (process.StartTime.Minute < 10)
+                {
+                    time += '0';
+                }
+                time += process.StartTime.Minute + ":";
+                if (process.StartTime.Second < 10)
+                {
+                    time += '0';
+                }
+                time += process.StartTime.Second;
+                Console.WriteLine($"| {process.Id,IdWidth} | {process.ProcessName,NameWidth} | {(process.PeakWorkingSet64 / 1024 / 1024) + " MB",-SizeWidth} | {time,-StartWidth} | {process.Threads.Count,-ThreadsWidth} | {process.PriorityClass,PriorityWidth} | {process.Responding,AliveWidth} |");
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                Console.WriteLine("Access denied");
+            }
+        }
 
         public bool KillById(int Id)
         {
@@ -26,44 +80,41 @@ namespace ProcessManager
             throw new NotImplementedException();
         }
 
-        public bool ProcessId(string Name)
+        public void GetProcessId(string Name)
         {
-            throw new NotImplementedException();
-        }
-
-        public bool ProcessName(int Id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TrackList()
-        {
-            var proceses = Process.GetProcesses();
-            Console.WriteLine($"| {"Id",7} | {"Name",-25} | {"Size",-10} | {"Start",-8} | {"Threads",-10} | {"Priority",-10} | {"Alive",-10} |");
-            foreach (var proces in proceses)
+            WriteHeader();
+            foreach (var process in Process.GetProcessesByName(Name))
             {
-                if (proces.MainWindowTitle != "")
+                if (UsableProcess(process))
                 {
-                    var time = "";
-                    if (proces.StartTime.Hour < 10)
-                    {
-                        time += '0';
-                    }
-                    time += proces.StartTime.Hour + ":";
-                    if (proces.StartTime.Minute < 10)
-                    {
-                        time += '0';
-                    }
-                    time += proces.StartTime.Minute + ":";
-                    if (proces.StartTime.Second < 10)
-                    {
-                        time += '0';
-                    }
-                    time += proces.StartTime.Second;
-                    Console.WriteLine($"| {proces.Id,7} | {proces.ProcessName,-25} | {(proces.PeakWorkingSet64 / 1024 / 1024) + " MB",10} | {time,8} | {proces.Threads.Count,-10} | {proces.PriorityClass,-10} | {proces.Responding,-10} |");
+                    WriteProcess(process);
                 }
             }
-            return true;
+        }
+
+        public void GetProcessName(int Id)
+        {
+            if (UsableProcess(Process.GetProcessById(Id)))
+            {
+                WriteHeader();
+                WriteProcess(Process.GetProcessById(Id));
+            }
+            else
+            {
+                Console.WriteLine("Access denied");
+            }
+        }
+
+        public void TrackList()
+        {
+            WriteHeader();
+            foreach (var process in Process.GetProcesses())
+            {
+                if (process.MainWindowTitle != "")
+                {
+                    WriteProcess(process);
+                }
+            }
         }
     }
 }

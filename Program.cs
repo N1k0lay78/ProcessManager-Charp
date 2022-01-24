@@ -8,6 +8,7 @@ namespace ProcessManager
         {
             var pm = new ProcessManager();
             pm.TrackList();
+            pm.GetProcessId(Console.ReadLine());
         }
     }
 }
