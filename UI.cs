@@ -45,10 +45,15 @@ namespace ProcessManager
                     break;
                 case "help":
                     Console.WriteLine("\tQuit              - Выйти из приложения");
+                    Console.WriteLine("\tGraphic           - В консоли рисуется интерфейс Q - to close");
                     Console.WriteLine("\tKill <process>    - Убить процесс                          (name/id)");
                     Console.WriteLine("\tList              - Список выполняющихся задач");
                     Console.WriteLine("\tProcess <process> - Показать процессы                      (name/id)");
                     Console.WriteLine("\tInfo <ids>        - Показать полную информацию о процессе  (ids)");
+                    break;
+                case "graphic":
+                    var app = new GraphicConsole();
+                    app.Run();
                     break;
                 case "kill":
                     if (Command.Length > 1)

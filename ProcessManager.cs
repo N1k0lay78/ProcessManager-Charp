@@ -64,7 +64,7 @@ namespace ProcessManager
                     time += '0';
                 }
                 time += process.StartTime.Second;
-                Console.WriteLine($"| {process.Id,IdWidth} | {process.ProcessName,NameWidth} | {(process.VirtualMemorySize64 / 1024 / 1024) + " MB",-SizeWidth} | {time,-StartWidth} | {process.Threads.Count,-ThreadsWidth} | {process.PriorityClass,PriorityWidth} | {process.Responding,AliveWidth} |");
+                Console.WriteLine($"| {process.Id,IdWidth} | {process.ProcessName,NameWidth} | {(process.PrivateMemorySize64 / 1024 / 1024) + " MB",-SizeWidth} | {time,-StartWidth} | {process.Threads.Count,-ThreadsWidth} | {process.PriorityClass,PriorityWidth} | {process.Responding,AliveWidth} |");
             }
             catch (System.ComponentModel.Win32Exception)
             {
@@ -190,11 +190,36 @@ namespace ProcessManager
             }
             return false;
         }
-
-        public void TrackList()
+        
+        public List<Process> GetProcessesList(int Id)
         {
-            WriteHeader();
+            
+            if (UsableProcess(Process.GetProcessById(Id)))
+            {
+                return new List<Process>() { Process.GetProcessById(Id) };
+            }
+            return null;
+        }
+
+        public List<Process> GetProcessesList(string Name)
+        {
             var names = new HashSet<string>();
+            List<Process> Processes = new List<Process>();
+            foreach (var process in Process.GetProcessesByName(Name))
+            {
+                if (UsableProcess(process))
+                {
+                    names.Add(process.ProcessName);
+                    Processes.Add(process);
+                }
+            }
+            return Processes;
+        }
+
+        public List<Process> GetProcessesList()
+        {
+            var names = new HashSet<string>();
+            List<Process> Processes = new List<Process>();
             foreach (var process in Process.GetProcesses())
             {
                 try
@@ -202,7 +227,47 @@ namespace ProcessManager
                     if (process.MainWindowHandle != process.Handle && process.ProcessName != "" && !names.Contains(process.ProcessName))
                     {
                         names.Add(process.ProcessName);
-                        WriteProcess(process);
+                        Processes.Add(process);
+                    }
+                }
+                catch (Exception)
+                {
+                    // System process or access denied
+                }
+            }
+            return Processes;
+        }
+
+        public void WriteProcesses(List<Process> Processes, int Index)
+        {
+            WriteHeader();
+            for (var i=0; i<Processes.Count; ++i)
+            {
+                if (i == Index)
+                {
+                    Console.BackgroundColor = ConsoleColor.DarkCyan;
+                }
+                else
+                {
+                    Console.BackgroundColor = ConsoleColor.DarkBlue;
+                }
+                WriteProcess(Processes[i]);
+            }
+        }
+
+        public void TrackList()
+        {
+            WriteHeader();
+            var names = new HashSet<string>();
+            var processes = Process.GetProcesses();
+            for (var i=0; i < processes.Length; ++i)
+            {
+                try
+                {
+                    if (processes[i].MainWindowHandle != processes[i].Handle && processes[i].ProcessName != "" && !names.Contains(processes[i].ProcessName))
+                    {
+                        names.Add(processes[i].ProcessName);
+                        WriteProcess(processes[i]);
                     }
                 }
                 catch (Exception)
