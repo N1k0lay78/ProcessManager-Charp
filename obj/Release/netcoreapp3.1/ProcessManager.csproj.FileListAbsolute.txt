@@ -1,0 +1,12 @@
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\bin\Release\netcoreapp3.1\ProcessManager.exe
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\bin\Release\netcoreapp3.1\ProcessManager.deps.json
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\bin\Release\netcoreapp3.1\ProcessManager.runtimeconfig.json
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\bin\Release\netcoreapp3.1\ProcessManager.runtimeconfig.dev.json
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\bin\Release\netcoreapp3.1\ProcessManager.dll
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\bin\Release\netcoreapp3.1\ProcessManager.pdb
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\obj\Release\netcoreapp3.1\ProcessManager.AssemblyInfoInputs.cache
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\obj\Release\netcoreapp3.1\ProcessManager.AssemblyInfo.cs
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\obj\Release\netcoreapp3.1\ProcessManager.csproj.CoreCompileInputs.cache
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\obj\Release\netcoreapp3.1\ProcessManager.dll
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\obj\Release\netcoreapp3.1\ProcessManager.pdb
+C:\Users\kolya\source\repos\ProcessManager\ProcessManager\obj\Release\netcoreapp3.1\ProcessManager.genruntimeconfig.cache
